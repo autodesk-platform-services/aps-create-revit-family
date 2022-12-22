@@ -82,6 +82,17 @@ Windows (use **Node.js command line** from Start menu)
     set DESIGN_AUTOMATION_FAMILY_TEMPLATE=<<YOUR REVIT WINDOW FAMILY TEMPLATE FILE URL>>    
     npm start
 
+**Note.**
+environment variable examples:
+- APS_CALLBACK_URL: `http://localhost:3000/api/aps/callback/oauth`
+- APS_WEBHOOK_URL: `http://808efcdc123456.ngrok.io/api/aps/callback/designautomation`
+
+The following are optional:
+- DESIGN_AUTOMATION_NICKNAME: Only necessary if there is a nickname, APS client id by default.
+- DESIGN_AUTOMATION_ACTIVITY_NAME: Only necessary if the activity name is customized, CreateWindowAppActivity by default.
+- DESIGN_AUTOMATION_ACTIVITY_ALIAS: Only necessary if the activity alias is customized, dev by default.
+
+
 ### ngrok
 Run `ngrok http 3000` to create a tunnel to your local machine, then copy the address into the `APS_WEBHOOK_URL` environment variable. Please check [WebHooks](https://aps.autodesk.com/en/docs/webhooks/v1/tutorials/configuring-your-server/) for details. 
 
