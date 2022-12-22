@@ -2,7 +2,7 @@
 using System.IO;
 using Newtonsoft.Json;
 
-namespace Autodesk.Forge.RevitIO.CreateWindow
+namespace Autodesk.APS.RevitIO.CreateWindow
 {
 
     internal class TypeDAParams

@@ -22,7 +22,7 @@
 
 using System;
 
-namespace Autodesk.Forge.RevitIO.CreateWindow
+namespace Autodesk.APS.RevitIO.CreateWindow
 {
     /// <summary>
     /// class is used to validate window parameters

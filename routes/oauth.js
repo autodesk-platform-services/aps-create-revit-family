@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////
 // Copyright (c) Autodesk, Inc. All rights reserved
-// Written by Forge Partner Development
+// Written by Autodesk Partner Development
 //
 // Permission to use, copy, modify, and distribute this software in
 // object code form for any purpose and without fee is hereby granted,
@@ -63,10 +63,12 @@ router.get('/oauth/v1/token', async (req, res, next) => {
     }
 
     try {
-        const accessToken = await oauth.getPublicToken();
-        res.json(accessToken);
+        const publicCredentials = await oauth.getPublicToken();
+        publicCredentials? res.json(publicCredentials):res.status(401).end();
+        return;
     } catch(err) {
-        next(err);
+        res.status(401).end();
+        return;
     }
 });
 

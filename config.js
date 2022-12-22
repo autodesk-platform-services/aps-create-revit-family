@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////
 // Copyright (c) Autodesk, Inc. All rights reserved
-// Written by Forge Partner Development
+// Written by Autodesk Partner Development
 //
 // Permission to use, copy, modify, and distribute this software in
 // object code form for any purpose and without fee is hereby granted,
@@ -16,13 +16,12 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-// Autodesk Forge configuration
 module.exports = {
     // Set environment variables or hard-code here
     credentials: {
-        client_id: process.env.FORGE_CLIENT_ID,
-        client_secret: process.env.FORGE_CLIENT_SECRET,
-        callback_url: process.env.FORGE_CALLBACK_URL
+        client_id: process.env.APS_CLIENT_ID,
+        client_secret: process.env.APS_CLIENT_SECRET,
+        callback_url:  process.env.APS_CALLBACK_URL
     },
     scopes: {
         // Required scopes for the server-side application
@@ -36,11 +35,12 @@ module.exports = {
     },
     designAutomation:{
         endpoint: 'https://developer.api.autodesk.com/da/us-east/v3/',
-        revit_family_template : process.env.DESIGN_AUTOMATION_FAMILY_TEMPLATE,
-        webhook_url: process.env.FORGE_WEBHOOK_URL,
-        nickname:     process.env.DESIGN_AUTOMATION_NICKNAME,
-        activity_name: process.env.DESIGN_AUTOMATION_ACTIVITY_NAME,
-        appbundle_activity_alias: 'dev',
+        // use the default value if not specified.
+        revit_family_template : process.env.DESIGN_AUTOMATION_FAMILY_TEMPLATE?process.env.DESIGN_AUTOMATION_FAMILY_TEMPLATE:"https://developer.api.autodesk.com/oss/v2/signedresources/2f4fe740-e6eb-4966-a657-06ef5ae13dfa?region=US",
+        webhook_url:  process.env.APS_WEBHOOK_URL,
+        nickname:     process.env.DESIGN_AUTOMATION_NICKNAME?process.env.DESIGN_AUTOMATION_NICKNAME:process.env.APS_CLIENT_ID,
+        activity_name: process.env.DESIGN_AUTOMATION_ACTIVITY_NAME?process.env.DESIGN_AUTOMATION_ACTIVITY_NAME:"CreateWindowAppActivity",
+        appbundle_activity_alias: process.env.DESIGN_AUTOMATION_ACTIVITY_ALIAS?process.env.DESIGN_AUTOMATION_ACTIVITY_ALIAS:'dev',
 
         URL:{
             GET_ENGINES_URL:    "https://developer.api.autodesk.com/da/us-east/v3/engines",

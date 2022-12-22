@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////
 // Copyright (c) Autodesk, Inc. All rights reserved
-// Written by Forge Partner Development
+// Written by Autodesk Partner Development
 //
 // Permission to use, copy, modify, and distribute this software in
 // object code form for any purpose and without fee is hereby granted,
@@ -24,14 +24,24 @@ const { OAuth } = require('./common/oauth');
 let router = express.Router();
 
 router.get('/user/v1/profile', async (req, res) => {
-    const oauth = new OAuth(req.session);
-    const internalToken = await oauth.getInternalToken();
-    const user = new UserProfileApi();
-    const profile = await user.getUserProfile(oauth.getClient(), internalToken);
-    res.json({
-        name: profile.body.firstName + ' ' + profile.body.lastName,
-        picture: profile.body.profileImages.sizeX40
-    });
+    try {
+        const oauth = new OAuth(req.session);
+        const internalToken = await oauth.getInternalToken();
+        if( internalToken ){
+            const user = new UserProfileApi();
+            const profile = await user.getUserProfile(oauth.getClient(), internalToken);
+            res.json({
+                name: profile.body.firstName + ' ' + profile.body.lastName,
+                picture: profile.body.profileImages.sizeX40
+            });
+
+        }else{
+            res.status(500).end();
+        }
+    }
+    catch (err) {
+        res.status(500).end(JSON.stringify(err));
+    }
 });
 
 module.exports = router;

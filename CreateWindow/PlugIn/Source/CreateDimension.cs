@@ -25,7 +25,7 @@ using Autodesk.Revit;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.ApplicationServices;
 
-namespace Autodesk.Forge.RevitIO.CreateWindow
+namespace Autodesk.APS.RevitIO.CreateWindow
 {
    /// <summary>
    /// The class allows users to create dimension using Document.FamilyCreate.NewDimension() function

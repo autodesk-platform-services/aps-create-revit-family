@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////
 // Copyright (c) Autodesk, Inc. All rights reserved
-// Written by Forge Partner Development
+// Written by Autodesk Partner Development
 //
 // Permission to use, copy, modify, and distribute this software in
 // object code form for any purpose and without fee is hereby granted,
@@ -56,9 +56,11 @@ router.use(async (req, res, next) => {
     let credentials = await oauth.getInternalToken();
     let oauth_client = oauth.getClient();
 
-    req.oauth_client = oauth_client;
-    req.oauth_token = credentials;
-    next();
+    if(credentials ){
+        req.oauth_client = oauth_client;
+        req.oauth_token = credentials;
+        next();
+    }
 });
 
 
@@ -100,8 +102,6 @@ router.post('/da4revit/v1/families', async(req, res)=>{
             res.status(500).end('failed to create the storage');
             return;
         }
-        const outputUrl = storageInfo.StorageUrl;
-        const signedS3Info = storageInfo.SignedS3Info;
 
         const bim360_Item_Type = 'items:autodesk.bim360:File';
         const bim360_Version_Type = 'versions:autodesk.bim360:File';
@@ -125,7 +125,7 @@ router.post('/da4revit/v1/families', async(req, res)=>{
                     res.status(400).end('The inpute Window Types is not correct');
                     return;
                 }
-                familyCreatedRes = await createWindowFamily(designAutomation.revit_family_template, params.WindowParams, outputUrl, destinateProjectId, signedS3Info, createFirstVersionBody, req.oauth_token, oauth_token);
+                familyCreatedRes = await createWindowFamily(designAutomation.revit_family_template, params.WindowParams, storageInfo.StorageId, destinateProjectId, createFirstVersionBody, req.oauth_token, oauth_token);
                 break;
 
             case FamilyType.DOOR:
@@ -230,11 +230,6 @@ router.post('/callback/designautomation', async (req, res) => {
         console.log("Post handle the workitem:  " + workitem.workitemId);        
         const type = workitem.createVersionData.data.type;
         try {
-
-            // Call to complete the S3 upload.
-            const objectApi = new ObjectsApi();
-            objectApi.completeS3Upload(workitem.signedS3Info.BucketKey, workitem.signedS3Info.ObjectKey, { uploadKey: workitem.signedS3Info.UploadKey }, null, req.oauth_client,workitem.access_token_3Legged)
-
             let version = null;
             if(type === "versions"){
                 const versions = new VersionsApi();

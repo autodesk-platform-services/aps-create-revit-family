@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////
 // Copyright (c) Autodesk, Inc. All rights reserved
-// Written by Forge Partner Development
+// Written by Autodesk Partner Development
 //
 // Permission to use, copy, modify, and distribute this software in
 // object code form for any purpose and without fee is hereby granted,
@@ -209,43 +209,17 @@ async function getNewCreatedStorageInfo(projectId, folderId, fileName, oauth_cli
         console.log('failed to create a storage.');
         return null;
     }
-
-    // setup the url of the new storage
-    const strList = storage.body.data.id.split('/');
-    if (strList.length !== 2) {
-        console.log('storage id is not correct');
-        return null;
-    }
-    // const storageUrl = "https://developer.api.autodesk.com/oss/v2/buckets/" + AUTODESK_HUB_BUCKET_KEY + "/objects/" + strList[1];
-
-    // create signed s3 url
-    let response = null;
-    try{
-        const object = new ObjectsApi();
-        response = await object.getS3UploadURL(AUTODESK_HUB_BUCKET_KEY,strList[1], null, oauth_client, oauth_token);
-    }catch( err ){
-        console.log('failed to get signed S3 url.');
-        return null;
-    }
-
     return {
-        "StorageId": storage.body.data.id,
-        // "StorageUrl": storageUrl
-        "StorageUrl": response.body.urls[0],
-        "SignedS3Info": {
-            BucketKey: AUTODESK_HUB_BUCKET_KEY,
-            ObjectKey: strList[1],
-            UploadKey: response.body.uploadKey
-        }
-    };
+        "StorageId": storage.body.data.id
+    }
 }
 
 
 
-function createWindowFamily(inputUrl, windowParams, outputUrl, projectId, signedS3Info, createVersionData, access_token_3Legged, access_token_2Legged) {
+function createWindowFamily(inputUrl, windowParams, outputUrl, projectId, createVersionData, access_token_3Legged, access_token_2Legged) {
     return new Promise(function (resolve, reject) {
         const workitemBody = {
-            activityId: designAutomation.nickname + '.' + designAutomation.activity_name,
+            activityId: designAutomation.nickname + '.' + designAutomation.activity_name+'+'+designAutomation.appbundle_activity_alias,
             arguments: {
                 templateFile: {
                     url: inputUrl,
@@ -258,7 +232,10 @@ function createWindowFamily(inputUrl, windowParams, outputUrl, projectId, signed
                 },
                 resultFamily: {
                     verb: 'put',
-                    url: outputUrl
+                    url: outputUrl,
+                    headers:{
+                        Authorization: 'Bearer ' + access_token_3Legged.access_token,
+                    },
                 },
                 onComplete: {
                     verb: "post",
@@ -280,6 +257,7 @@ function createWindowFamily(inputUrl, windowParams, outputUrl, projectId, signed
             json: true
         };
 
+        console.log(options);
         request(options, function (error, response, body) {
             if (error) {
                 reject(error);
@@ -293,7 +271,6 @@ function createWindowFamily(inputUrl, windowParams, outputUrl, projectId, signed
                 workitemList.push({
                     workitemId: resp.id,
                     projectId: projectId,
-                    signedS3Info: signedS3Info,
                     createVersionData: createVersionData,
                     access_token_3Legged: access_token_3Legged
                 })

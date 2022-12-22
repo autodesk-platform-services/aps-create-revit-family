@@ -27,7 +27,7 @@ using System.Linq;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.ApplicationServices;
 
-namespace Autodesk.Forge.RevitIO.CreateWindow
+namespace Autodesk.APS.RevitIO.CreateWindow
 {
     /// <summary>
     /// Inherited from WindowCreation class
@@ -212,7 +212,7 @@ namespace Autodesk.Forge.RevitIO.CreateWindow
 
             //add dimension between sash reference plane and wall face,and add parameter "Window Inset",label the dimension with window-inset parameter
             Dimension windowInsetDimension = m_dimensionCreator.AddDimension(m_rightView, m_sashPlane, exteriorWallFace);
-            FamilyParameter windowInsetPara = m_familyManager.AddParameter("Window Inset", BuiltInParameterGroup.INVALID, ParameterType.Length, false);
+            FamilyParameter windowInsetPara = m_familyManager.AddParameter("Window Inset", new ForgeTypeId(), SpecTypeId.Length, false);
             m_familyManager.Set(windowInsetPara, m_windowInset);
             windowInsetDimension.FamilyLabel = windowInsetPara;
 

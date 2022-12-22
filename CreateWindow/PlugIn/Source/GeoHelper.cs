@@ -28,7 +28,7 @@ using Autodesk.Revit.DB;
 using Element = Autodesk.Revit.DB.Element;
 using GElement = Autodesk.Revit.DB.GeometryElement;
 
-namespace Autodesk.Forge.RevitIO.CreateWindow
+namespace Autodesk.APS.RevitIO.CreateWindow
 {
    /// <summary>
    /// A object to help locating with geometry data.

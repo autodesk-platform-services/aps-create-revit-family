@@ -4,9 +4,9 @@
     <Name>Create Window Family App</Name>
     <Assembly>CreateWindowApp.dll</Assembly>
     <ClientId>99E53A88-49F9-427D-B6A6-0316E199014D</ClientId>
-    <FullClassName>Autodesk.Forge.RevitIO.CreateWindow.CreateWindowApp</FullClassName>
+    <FullClassName>Autodesk.APS.RevitIO.CreateWindow.CreateWindowApp</FullClassName>
     <Description>"Create Window Family"</Description>
-    <VendorId>Forge</VendorId>
+    <VendorId>APS</VendorId>
     <VendorDescription>Autodesk</VendorDescription>
   </AddIn>
 </RevitAddIns>

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////
 // Copyright (c) Autodesk, Inc. All rights reserved
-// Written by Forge Partner Development
+// Written by Autodesk Partner Development
 //
 // Permission to use, copy, modify, and distribute this software in
 // object code form for any purpose and without fee is hereby granted,
@@ -40,8 +40,8 @@ class OAuth {
     }
 
     async getPublicToken() {
-        if (this._isExpired()) {
-            await this._refreshTokens();
+        if (this._isExpired() && !await this._refreshTokens()) {
+            return null;
         }
 
         return {
@@ -51,8 +51,8 @@ class OAuth {
     }
 
     async getInternalToken() {
-        if (this._isExpired()) {
-            await this._refreshTokens();
+        if (this._isExpired() && !await this._refreshTokens()) {
+            return null;
         }
 
         return {
@@ -65,16 +65,23 @@ class OAuth {
     // get the internal and public tokens and store them 
     // on the session
     async setCode(code) {
-        const internalTokenClient = this.getClient(config.scopes.internal);
-        const publicTokenClient = this.getClient(config.scopes.public);
-        const internalCredentials = await internalTokenClient.getToken(code);
-        const publicCredentials = await publicTokenClient.refreshToken(internalCredentials);
+        try {
+            const internalTokenClient = this.getClient(config.scopes.internal);
+            const publicTokenClient = this.getClient(config.scopes.public);
+            const internalCredentials = await internalTokenClient.getToken(code);
+            const publicCredentials = await publicTokenClient.refreshToken(internalCredentials);
 
-        const now = new Date();
-        this._session.internal_token = internalCredentials.access_token;
-        this._session.public_token = publicCredentials.access_token;
-        this._session.refresh_token = publicCredentials.refresh_token;
-        this._session.expires_at = (now.setSeconds(now.getSeconds() + publicCredentials.expires_in));
+            const now = new Date();
+            this._session.internal_token = internalCredentials.access_token;
+            this._session.public_token = publicCredentials.access_token;
+            this._session.refresh_token = publicCredentials.refresh_token;
+            this._session.expires_at = (now.setSeconds(now.getSeconds() + publicCredentials.expires_in));
+            return true;
+        }
+        catch (err) {
+            console.log("failed to get token due to " + err);
+            return false;
+        }
     }
 
     _expiresIn() {
@@ -88,16 +95,23 @@ class OAuth {
     }
 
     async _refreshTokens() {
-        let internalTokenClient = this.getClient(config.scopes.internal);
-        let publicTokenClient = this.getClient(config.scopes.public);
-        const internalCredentials = await internalTokenClient.refreshToken({ refresh_token: this._session.refresh_token });
-        const publicCredentials = await publicTokenClient.refreshToken(internalCredentials);
+        try {
+            let internalTokenClient = this.getClient(config.scopes.internal);
+            let publicTokenClient = this.getClient(config.scopes.public);
+            const internalCredentials = await internalTokenClient.refreshToken({ refresh_token: this._session.refresh_token });
+            const publicCredentials = await publicTokenClient.refreshToken(internalCredentials);
 
-        const now = new Date();
-        this._session.internal_token = internalCredentials.access_token;
-        this._session.public_token = publicCredentials.access_token;
-        this._session.refresh_token = publicCredentials.refresh_token;
-        this._session.expires_at = (now.setSeconds(now.getSeconds() + publicCredentials.expires_in));
+            const now = new Date();
+            this._session.internal_token = internalCredentials.access_token;
+            this._session.public_token = publicCredentials.access_token;
+            this._session.refresh_token = publicCredentials.refresh_token;
+            this._session.expires_at = (now.setSeconds(now.getSeconds() + publicCredentials.expires_in));
+            return true;
+        }
+        catch (err) {
+            console.log("failed to refresh token due to " + err);
+            return false;
+        }
     }
 }
 
