@@ -175,17 +175,18 @@ async function getFolderContents(projectId, folderId, oauthClient, credentials, 
 async function getVersions(projectId, itemId, oauthClient, credentials, res) {
     const items = new ItemsApi();
     const versions = await items.getItemVersions(projectId, itemId, {}, oauthClient, credentials);
-    res.json(versions.body.data.map((version) => {
+    const versions_json = versions.body.data.map( (version) => {
         const dateFormated = new Date(version.attributes.lastModifiedTime).toLocaleString();
         const versionst = version.id.match(/^(.*)\?version=(\d+)$/)[2];
-        const viewerUrn = (version.relationships !== null && version.relationships.derivatives !== null ? version.relationships.derivatives.data.id : null);
+        const viewerUrn = (version.relationships != null && version.relationships.derivatives != null && version.relationships.derivatives.data != null ? version.relationships.derivatives.data.id : null);
         return createTreeNode(
             viewerUrn,
             decodeURI('v' + versionst + ': ' + dateFormated + ' by ' + version.attributes.lastModifiedUserName),
-            (viewerUrn !== null ? 'versions' : 'unsupported'),
+            (viewerUrn != null ? 'versions' : 'unsupported'),
             false
         );
-    }));
+    })
+    res.json(versions_json.filter(node=>node!=null));
 }
 
 // Format data for tree
